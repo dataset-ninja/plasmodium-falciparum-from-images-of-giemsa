@@ -15,6 +15,7 @@ def download_dataset(teamfiles_ds_path: str) -> str:
     file_info = api.file.get_info_by_path(team_id, teamfiles_ds_path)
     file_name_with_ext = file_info.name
     local_path = os.path.join(storage_dir, file_name_with_ext)
+    sly.logger.info(f"Storage dir content: {os.listdir(storage_dir)}")
     dataset_path = os.path.splitext(local_path)[0]
 
     if not os.path.exists(dataset_path):
