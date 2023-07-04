@@ -26,7 +26,7 @@ def download_dataset(teamfiles_ds_path: str) -> str:
         sly.logger.info(f"Start unpacking archive '{file_name_with_ext}'...")
         path = unpack_if_archive(local_path)
         sly.logger.info(f"Archive '{file_name_with_ext}' was unpacked successfully to: '{path}'.")
-        sly.logger.info(f"Dataset dir contains: '{os.listdir(path)}'.")
+        sly.logger.info(f"Dataset dir content: '{os.listdir(path)}'.")
         sly.fs.silent_remove(local_path)
 
     else:
@@ -40,7 +40,8 @@ def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
     teamfiles_dir = "/4import/Malaria Segmentation/archive.zip"
-    dataset_path = download_dataset(teamfiles_dir)
+    download_dataset(teamfiles_dir)
+    dataset_path = "/4import/Malaria Segmentation/malaria_segmentation"
     images_folder = "Giemsa stained images"
     masks_folder = "Ground truth images"
     batch_size = 10
