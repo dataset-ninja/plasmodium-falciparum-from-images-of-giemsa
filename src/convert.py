@@ -49,7 +49,7 @@ def convert_and_upload_supervisely_project(
     xlsx_file = "LifeStages.xlsx"
 
     sly.logger.info(f"Dataset path content: {os.listdir(dataset_path)}")
-    df = pd.read_excel(os.path.join(dataset_path, xlsx_file), engine='xlrd')
+    df = pd.read_excel(os.path.join(dataset_path, xlsx_file), engine='openpyxl')
     df = df[["imageName", "stage"]]
     df = df.set_index("imageName")
     image_names_to_stages_mapping = df.to_dict()["stage"]
