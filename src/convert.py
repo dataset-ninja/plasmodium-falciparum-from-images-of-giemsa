@@ -3,16 +3,47 @@ import os
 import pandas as pd
 import supervisely as sly
 from cv2 import connectedComponents
+from dataset_tools.convert import unpack_if_archive
 from tqdm import tqdm
+
+
+def download_dataset(teamfiles_ds_path: str) -> str:
+    api = sly.Api.from_env()
+    team_id = sly.env.team_id()
+    storage_dir = sly.app.get_data_dir()
+
+    file_info = api.file.get_info_by_path(team_id, teamfiles_ds_path)
+    file_name_with_ext = file_info.name
+    local_path = os.path.join(storage_dir, file_name_with_ext)
+    dataset_path = os.path.splitext(local_path)[0]
+
+    if not os.path.exists(dataset_path):
+        sly.logger.info(f"Dataset dir '{dataset_path}' does not exist.")
+        if not os.path.exists(local_path):
+            sly.logger.info(f"Downloading archive '{teamfiles_ds_path}'...")
+            api.file.download(team_id, teamfiles_ds_path, local_path)
+
+        sly.logger.info(f"Start unpacking archive '{file_name_with_ext}'...")
+        path = unpack_if_archive(local_path)
+        sly.logger.info(f"Archive '{file_name_with_ext}' was unpacked successfully to: '{path}'.")
+        sly.logger.info(f"Dataset dir contains: '{os.listdir(path)}'.")
+        sly.fs.silent_remove(local_path)
+
+    else:
+        sly.logger.info(
+            f"Archive '{file_name_with_ext}' was already unpacked to '{dataset_path}'. Skipping..."
+        )
+    return dataset_path
 
 
 def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
-    dataset_path = "/Users/almaz/Downloads/malaria_segmentation"
+    teamfiles_dir = "/4import/Malaria Segmentation/archive.zip"
+    dataset_path = download_dataset(teamfiles_dir)
     images_folder = "Giemsa stained images"
     masks_folder = "Ground truth images"
-    batch_size = 30
+    batch_size = 10
     xlsx_file = "LifeStages.xlsx"
 
     df = pd.read_excel(os.path.join(dataset_path, xlsx_file))
