@@ -41,8 +41,8 @@ def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
     teamfiles_dir = "/4import/Malaria Segmentation/archive.zip"
-    download_dataset(teamfiles_dir)
-    dataset_path = "/4import/Malaria Segmentation/malaria_segmentation"
+    dataset_path = download_dataset(teamfiles_dir)
+    dataset_path = os.path.join(dataset_path, "malaria_segmentation")
     images_folder = "Giemsa stained images"
     masks_folder = "Ground truth images"
     batch_size = 10
