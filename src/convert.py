@@ -26,7 +26,7 @@ def download_dataset(teamfiles_ds_path: str) -> str:
         sly.logger.info(f"Start unpacking archive '{file_name_with_ext}'...")
         path = unpack_if_archive(local_path)
         sly.logger.info(f"Archive '{file_name_with_ext}' was unpacked successfully to: '{path}'.")
-        sly.logger.info(f"Dataset dir content: '{os.listdir(path)}'.")
+        sly.logger.info(f"Dataset dir content: {os.listdir(path)}.")
         sly.fs.silent_remove(local_path)
 
     else:
@@ -47,6 +47,7 @@ def convert_and_upload_supervisely_project(
     batch_size = 10
     xlsx_file = "LifeStages.xlsx"
 
+    sly.logger.info(f"Dataset path content: {os.listdir(dataset_path)}")
     df = pd.read_excel(os.path.join(dataset_path, xlsx_file))
     df = df[["imageName", "stage"]]
     df = df.set_index("imageName")
