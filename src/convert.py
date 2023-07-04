@@ -40,6 +40,7 @@ def download_dataset(teamfiles_ds_path: str) -> str:
 def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
+    # dataset_path = "/Users/almaz/Downloads/malaria_segmentation"
     teamfiles_dir = "/4import/Malaria Segmentation/archive.zip"
     dataset_path = download_dataset(teamfiles_dir)
     dataset_path = os.path.join(dataset_path, "malaria_segmentation")
