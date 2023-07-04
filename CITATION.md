@@ -2,7 +2,7 @@ If you make use of the Malaria Segmentation data, please cite the following refe
 
 ``` bibtex 
 @misc{Malaria Segmentation,
-	author="TO BE FILLED MANUALLY!",
+	author="Syed Saiden Abbas, Tjeerd Dijkstra",
 	title="Malaria Segmentation",
 	year={2019},
 	url="https://www.kaggle.com/datasets/niccha/malaria-segmentation"
