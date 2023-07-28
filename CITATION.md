@@ -1,12 +1,7 @@
 If you make use of the Malaria Segmentation data, please cite the following reference:
 
-``` bibtex 
-@misc{Malaria Segmentation,
-	author="Syed Saiden Abbas, Tjeerd Dijkstra",
-	title="Malaria Segmentation",
-	year={2019},
-	url="https://www.kaggle.com/datasets/niccha/malaria-segmentation"
-}
+```bibtex
+Abbas, Syed Saiden; M. H. Dijkstra, Tjeerd (2019), “Malaria-Detection-2019”, Mendeley Data, V1, doi: 10.17632/5bf2kmwvfn.1
 ```
 
-[🔗 Source](https://www.kaggle.com/datasets/niccha/malaria-segmentation)
+[🔗 Source](https://data.mendeley.com/datasets/5bf2kmwvfn/1)
