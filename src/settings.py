@@ -39,7 +39,7 @@ if RELEASE_DATE is None:
 HOMEPAGE_URL: str = "https://data.mendeley.com/datasets/5bf2kmwvfn/1"
 # e.g. "https://some.com/dataset/homepage"
 
-PREVIEW_IMAGE_ID: int = 1473044
+PREVIEW_IMAGE_ID: int = 2152994
 # This should be filled AFTER uploading images to instance, just ID of any image.
 
 GITHUB_URL: str = "https://github.com/dataset-ninja/malaria-segmentation"
@@ -53,7 +53,18 @@ DOWNLOAD_ORIGINAL_URL: Optional[
 ] = "https://prod-dcd-datasets-cache-zipfiles.s3.eu-west-1.amazonaws.com/5bf2kmwvfn-1.zip"
 # Optional link for downloading original dataset (e.g. "https://some.com/dataset/download")
 
-CLASS2COLOR: Optional[Dict[str, List[str]]] = None
+CLASS2COLOR: Optional[Dict[str, List[str]]] = {
+    "R": [230, 25, 75],
+    "LR-ET": [60, 180, 75],
+    "LT": [255, 225, 25],
+    "MT": [0, 130, 200],
+    "Esch": [245, 130, 48],
+    "Lsch": [145, 30, 180],
+    "Seg": [70, 240, 240],
+    "WBC": [240, 50, 230],
+    "Debris": [210, 245, 60],
+}
+
 # If specific colors for classes are needed, fill this dict (e.g. {"class1": [255, 0, 0], "class2": [0, 255, 0]})
 
 PAPER: Optional[

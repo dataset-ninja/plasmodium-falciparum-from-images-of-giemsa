@@ -1,118 +1,129 @@
-import os
+# https://www.kaggle.com/datasets/niccha/malaria-segmentation
 
-import pandas as pd
+import csv
+import os
+from collections import defaultdict
+
+import numpy as np
 import supervisely as sly
 from cv2 import connectedComponents
-from dataset_tools.convert import unpack_if_archive
-from tqdm import tqdm
+from dotenv import load_dotenv
+from supervisely.io.fs import get_file_name, get_file_name_with_ext
 
+# if sly.is_development():
+# load_dotenv("local.env")
+# load_dotenv(os.path.expanduser("~/supervisely.env"))
 
-def download_dataset(teamfiles_ds_path: str) -> str:
-    api = sly.Api.from_env()
-    team_id = sly.env.team_id()
-    storage_dir = sly.app.get_data_dir()
-
-    file_info = api.file.get_info_by_path(team_id, teamfiles_ds_path)
-    file_name_with_ext = file_info.name
-    local_path = os.path.join(storage_dir, file_name_with_ext)
-    sly.logger.info(f"Storage dir content: {os.listdir(storage_dir)}")
-    dataset_path = os.path.splitext(local_path)[0]
-
-    if not os.path.exists(dataset_path):
-        sly.logger.info(f"Dataset dir '{dataset_path}' does not exist.")
-        if not os.path.exists(local_path):
-            sly.logger.info(f"Downloading archive '{teamfiles_ds_path}'...")
-            api.file.download(team_id, teamfiles_ds_path, local_path)
-
-        sly.logger.info(f"Start unpacking archive '{file_name_with_ext}'...")
-        path = unpack_if_archive(local_path)
-        sly.logger.info(f"Archive '{file_name_with_ext}' was unpacked successfully to: '{path}'.")
-        sly.logger.info(f"Dataset dir content: {os.listdir(path)}.")
-        sly.fs.silent_remove(local_path)
-
-    else:
-        sly.logger.info(
-            f"Archive '{file_name_with_ext}' was already unpacked to '{dataset_path}'. Skipping..."
-        )
-    return dataset_path
+# api = sly.Api.from_env()
+# team_id = sly.env.team_id()
+# workspace_id = sly.env.workspace_id()
 
 
 def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
-    # dataset_path = "/Users/almaz/Downloads/malaria_segmentation"
-    teamfiles_dir = "/4import/Malaria Segmentation/archive.zip"
-    dataset_path = download_dataset(teamfiles_dir)
-    dataset_path = os.path.join(dataset_path, "malaria_segmentation")
-    images_folder = "Giemsa stained images"
-    masks_folder = "Ground truth images"
-    batch_size = 10
-    xlsx_file = "LifeStages.xlsx"
+    # project_name = "Malaria Segmentation"
+    dataset_path = "APP_DATA/5bf2kmwvfn-1/"
+    images_folder_name = "Giemsa stained images"
+    masks_folder_name = "Ground truth images"
+    ds_name = "ds"
+    batch_size = 30
+    masks_suffix = "_GT.png"
+    data_classes_tags_path = "APP_DATA/5bf2kmwvfn-1/LifeStages.xlsx"
+    data_classes_tags_path = "APP_DATA/5bf2kmwvfn-1/please_work.txt"
 
-    sly.logger.info(f"Dataset path content: {os.listdir(dataset_path)}")
-    df = pd.read_excel(os.path.join(dataset_path, xlsx_file), engine='openpyxl')
-    print(df.head())
-    # df = df[["imageName", "stage"]]
-    df = df.set_index("imageName")
-    image_names_to_stages_mapping = df.to_dict()["stage"]
-    df = None
+    def get_points_dist(coords1, coords2):
+        return (coords1[0] - coords2[0]) ** 2 + (coords1[1] - coords2[1]) ** 2
 
-    def _parse_info_for_tags(image_name):
-        trip = image_name.split(" ")[1]
-        day = image_name.split(" ")[3]
-        stage = image_names_to_stages_mapping[image_name]
-        return trip, day, stage
-
-    def _create_ann(image_name):
+    def create_ann(image_path):
         labels = []
-        file_name_only = os.path.splitext(image_name)[0]
-        mask_name = file_name_only + "_GT.png"
-        mask_path = os.path.join(dataset_path, masks_folder, mask_name)
-        mask = sly.image.read(mask_path)
-        height, width = mask.shape[:2]
-        if sly.fs.file_exists(mask_path):
-            mask_np = sly.imaging.image.read(mask_path)[:, :, 0]
-            mask = mask_np == 255
-            ret, curr_mask = connectedComponents(mask.astype("uint8"), connectivity=8)
-            for i in range(1, ret):
-                obj_mask = curr_mask == i
-                curr_bitmap = sly.Bitmap(obj_mask)
+
+        full_image_name = get_file_name_with_ext(image_path)
+        classes_data = name_to_data[full_image_name]
+
+        image_name = get_file_name(image_path)
+        mask_path = os.path.join(masks_pathes, image_name + masks_suffix)
+        ann_np = sly.imaging.image.read(mask_path)[:, :, 0]
+        img_height = ann_np.shape[0]
+        img_wight = ann_np.shape[1]
+        mask = ann_np != 0
+        ret, curr_mask = connectedComponents(mask.astype("uint8"), connectivity=8)
+        for i in range(1, ret):
+            obj_mask = curr_mask == i
+            curr_bitmap = sly.Bitmap(obj_mask)
+            rect_to_centr = curr_bitmap.to_bbox()
+            y = rect_to_centr.center.row  # error in SL lib...
+            x = rect_to_centr.center.col
+            distances = []
+            for curr_data in classes_data:
+                ann_x = int(curr_data[1])
+                ann_y = int(curr_data[2])
+                distances.append(get_points_dist((x, y), (ann_x, ann_y)))
+            if len(distances) > 0:
+                min_index = distances.index(min(distances))
+                real_data = classes_data.pop(min_index)
+                class_name = real_data[0]
+                if class_name == "DEBRIS":
+                    class_name = "Debris"
+                if class_name == "Gam":  # bad authors data...
+                    continue
+                obj_class = meta.get_obj_class(class_name)
                 curr_label = sly.Label(curr_bitmap, obj_class)
                 labels.append(curr_label)
 
-        trip, day, stage = _parse_info_for_tags(image_name)
-        image_tags = [
-            sly.Tag(stage_tag_meta, stage),
-            sly.Tag(trip_tag_meta, trip),
-            sly.Tag(day_tag_meta, day),
+        return sly.Annotation(img_size=(img_height, img_wight), labels=labels)
+
+    obj_class_r = sly.ObjClass("R", sly.Bitmap)
+    obj_class_lr_et = sly.ObjClass("LR-ET", sly.Bitmap)
+    obj_class_lt = sly.ObjClass("LT", sly.Bitmap)
+    obj_class_mt = sly.ObjClass("MT", sly.Bitmap)
+    obj_class_esch = sly.ObjClass("Esch", sly.Bitmap)
+    obj_class_lsch = sly.ObjClass("Lsch", sly.Bitmap)
+    obj_class_seg = sly.ObjClass("Seg", sly.Bitmap)
+    obj_class_wbc = sly.ObjClass("WBC", sly.Bitmap)
+    obj_class_debris = sly.ObjClass("Debris", sly.Bitmap)
+
+    project = api.project.create(workspace_id, project_name, change_name_if_conflict=True)
+    meta = sly.ProjectMeta(
+        obj_classes=[
+            obj_class_r,
+            obj_class_lr_et,
+            obj_class_lt,
+            obj_class_mt,
+            obj_class_esch,
+            obj_class_lsch,
+            obj_class_seg,
+            obj_class_wbc,
+            obj_class_debris,
         ]
-        return sly.Annotation(img_size=(height, width), labels=labels, img_tags=image_tags)
+    )
+    api.project.update_meta(project.id, meta.to_json())
 
-    obj_class = sly.ObjClass("malaria parasite", sly.Bitmap)
+    dataset = api.dataset.create(project.id, ds_name, change_name_if_conflict=True)
 
-    stage_tag_meta = sly.TagMeta("stage", sly.TagValueType.ANY_STRING)
-    trip_tag_meta = sly.TagMeta("trip", sly.TagValueType.ANY_STRING)
-    day_tag_meta = sly.TagMeta("day", sly.TagValueType.ANY_STRING)
-    tag_metas = [stage_tag_meta, trip_tag_meta, day_tag_meta]
+    images_pathes = os.path.join(dataset_path, images_folder_name)
+    masks_pathes = os.path.join(dataset_path, masks_folder_name)
+    images_names = os.listdir(images_pathes)
 
-    project_meta = sly.ProjectMeta(obj_classes=[obj_class], tag_metas=tag_metas)
+    name_to_data = defaultdict(list)
+    with open(data_classes_tags_path) as f:
+        content = f.read().split("\n")
+        for curr_data in content:
+            curr_data = curr_data.split("\t")
+            name_to_data[curr_data[0]].append(curr_data[1:])
 
-    project = api.project.create(workspace_id, project_name)
-    dataset = api.dataset.create(project.id, "ds0")
+    progress = sly.Progress("Create dataset {}".format(ds_name), len(images_names))
 
-    api.project.update_meta(project.id, project_meta.to_json())
-
-    all_images = os.listdir(os.path.join(dataset_path, images_folder))
-
-    pbar = tqdm(total=len(all_images), desc="Processing images")
-    for batch_img_names in sly.batched(all_images, batch_size):
-        batch_img_paths = [
-            os.path.join(dataset_path, images_folder, img_name) for img_name in batch_img_names
+    for img_names_batch in sly.batched(images_names, batch_size=batch_size):
+        images_pathes_batch = [
+            os.path.join(images_pathes, image_path) for image_path in img_names_batch
         ]
-        anns = [_create_ann(img_name) for img_name in batch_img_names]
-        img_infos = api.image.upload_paths(dataset.id, batch_img_names, batch_img_paths)
-        img_ids = [img_info.id for img_info in img_infos]
-        api.annotation.upload_anns(img_ids, anns)
 
-        pbar.update(len(batch_img_names))
+        img_infos = api.image.upload_paths(dataset.id, img_names_batch, images_pathes_batch)
+        img_ids = [im_info.id for im_info in img_infos]
+
+        anns_batch = [create_ann(image_path) for image_path in images_pathes_batch]
+        api.annotation.upload_anns(img_ids, anns_batch)
+
+        progress.iters_done_report(len(img_names_batch))
     return project
