@@ -1,1 +1,1 @@
-Malaria Segmentation is under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) license.
+Malaria Segmentation: A Dataset for Segmentation of Malaria Infected Cells is under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) license.
