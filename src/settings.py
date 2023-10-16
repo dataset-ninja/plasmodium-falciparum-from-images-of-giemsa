@@ -22,7 +22,7 @@ HIDE_DATASET = False  # set False when 100% sure about repo quality
 ##################################
 # * After uploading to instance ##
 ##################################
-LICENSE: License = License.CC0_1_0()
+LICENSE: License = License.CC_BY_4_0()
 APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Medical()]
 CATEGORY: Category = Category.Medical()
 
@@ -71,6 +71,9 @@ CLASS2COLOR: Optional[Dict[str, List[str]]] = {
 PAPER: Optional[
     str
 ] = "https://diagnosticpathology.biomedcentral.com/articles/10.1186/s13000-020-01040-9"
+BLOGPOST: Optional[Union[str, List[str], Dict[str, str]]] = None
+REPOSITORY: Optional[Union[str, List[str], Dict[str, str]]] = {"Kaggle":"https://www.kaggle.com/datasets/niccha/malaria-segmentation"}
+
 CITATION_URL: Optional[str] = "https://data.mendeley.com/datasets/5bf2kmwvfn/1"
 AUTHORS: Optional[List[str]] = ["Abbas, Syed Saiden", "M. H. Dijkstra, Tjeerd"]
 
