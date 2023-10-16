@@ -1,6 +1,6 @@
 Dataset **Malaria Segmentation** can be downloaded in [Supervisely format](https://developer.supervisely.com/api-references/supervisely-annotation-json-format):
 
- [Download](https://assets.supervisely.com/supervisely-supervisely-assets-public/teams_storage/P/J/wl/XGWgwkpbI6z8erhT12apM8yHZ8DE6LysYSWNYq7rjtU1SBh3SioDvsCVXvqyeG3xsU7KbtX7BIGIhpBGV9WKet6J3LY7Z36mFLez8gLhdF7PFtK4BGC38KgqtK31.tar)
+ [Download](https://assets.supervisely.com/supervisely-supervisely-assets-public/teams_storage/n/O/3K/cmW94GxXRKAABaD0yfsTSx88uVhc0S43VCvhdht6GUG9kxC8ZqQEsi5jt0akNAHCnXsCUj6EPK2PGnToGKdn8I0zNMkzx7rkazA2UTegKoUHF6GGJpkNluazePOD.tar)
 
 As an alternative, it can be downloaded with *dataset-tools* package:
 ``` bash
