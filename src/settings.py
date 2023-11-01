@@ -76,6 +76,8 @@ REPOSITORY: Optional[Union[str, List[str], Dict[str, str]]] = {"Kaggle":"https:/
 
 CITATION_URL: Optional[str] = "https://data.mendeley.com/datasets/5bf2kmwvfn/1"
 AUTHORS: Optional[List[str]] = ["Abbas, Syed Saiden", "M. H. Dijkstra, Tjeerd"]
+AUTHORS_CONTACTS: Optional[List[str]] = ["tjeerd.dijkstra@tuebingen.mpg.de"]
+
 
 ORGANIZATION_NAME: Optional[Union[str, List[str]]] = [
     "Radboud University Nijmegen, Netherlands",
@@ -131,6 +133,7 @@ def get_settings():
     settings["repository"] = REPOSITORY
     settings["citation_url"] = CITATION_URL
     settings["authors"] = AUTHORS
+    settings["authors_contacts"] = AUTHORS_CONTACTS
     settings["organization_name"] = ORGANIZATION_NAME
     settings["organization_url"] = ORGANIZATION_URL
     settings["slytagsplit"] = SLYTAGSPLIT
