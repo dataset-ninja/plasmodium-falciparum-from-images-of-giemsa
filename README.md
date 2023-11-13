@@ -1,3 +1,3 @@
-# Malaria Segmentation: A Dataset for Segmentation of Malaria Infected Cells
+# Plasmodium Falciparum from Images of Giemsa for Malaria Detection
 
-Malaria Segmentation is a dataset for instance segmentation, semantic segmentation, and object detection tasks.
+Plasmodium Falciparum from Images of Giemsa for Malaria Detection is a dataset for instance segmentation, semantic segmentation, and object detection tasks.
