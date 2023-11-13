@@ -13,9 +13,9 @@ from dataset_tools.templates import (
 ##################################
 # * Before uploading to instance #
 ##################################
-PROJECT_NAME: str = "Giemsa Stained Images for Malaria Detection"
+PROJECT_NAME: str = "Plasmodium Falciparum from Images of Giemsa for Malaria Detection"
 PROJECT_NAME_FULL: str = (
-    "Giemsa Stained Images for Malaria Detection"
+    "Plasmodium Falciparum from Images of Giemsa for Malaria Detection"
 )
 HIDE_DATASET = False  # set False when 100% sure about repo quality
 
