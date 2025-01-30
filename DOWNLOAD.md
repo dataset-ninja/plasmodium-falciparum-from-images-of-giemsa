@@ -1,6 +1,6 @@
 Dataset **Plasmodium Falciparum from Images of Giemsa for Malaria Detection** can be downloaded in [Supervisely format](https://developer.supervisely.com/api-references/supervisely-annotation-json-format):
 
- [Download](https://www.dropbox.com/scl/fi/4yk5ge0mgiavpqo3esnr9/plasmodium-falciparum-from-images-of-giemsa-for-malaria-detection-DatasetNinja.tar?rlkey=5gtchn7snkwi8q3zi3t9ec27u&dl=1)
+ [Download](https://assets.supervisely.com/remote/eyJsaW5rIjogImZzOi8vYXNzZXRzLzE1ODVfUGxhc21vZGl1bSBGYWxjaXBhcnVtIGZyb20gSW1hZ2VzIG9mIEdpZW1zYSBmb3IgTWFsYXJpYSBEZXRlY3Rpb24vcGxhc21vZGl1bS1mYWxjaXBhcnVtLWZyb20taW1hZ2VzLW9mLWdpZW1zYS1mb3ItbWFsYXJpYS1kZXRlY3Rpb24tRGF0YXNldE5pbmphLnRhciIsICJzaWciOiAiZjltbHNDMC9iRVdyaUhXVk1VTE1CTGFYRDVYVmozcDZFMVdDL2UxaWQ4MD0ifQ==)
 
 As an alternative, it can be downloaded with *dataset-tools* package:
 ``` bash
